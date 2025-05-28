@@ -3,8 +3,8 @@ use dioxus::prelude::*;
 use views::{Dashboard, File, Home, Login, Navbar, Signup};
 
 mod components;
-mod views;
 mod model;
+mod views;
 
 #[derive(Debug, Clone, Routable, PartialEq)]
 #[rustfmt::skip]

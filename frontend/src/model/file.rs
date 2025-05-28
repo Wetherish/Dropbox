@@ -12,3 +12,10 @@ pub struct File {
     pub thumbnail_url: Option<String>,
     pub file_type: String,
 }
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct NewFolderRequest {
+    pub parent_id: String,
+    pub owner_id: String,
+    pub name: String,
+}

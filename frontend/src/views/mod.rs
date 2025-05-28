@@ -14,5 +14,4 @@ mod navbar;
 mod signup;
 pub use signup::Signup;
 
-
 pub use navbar::Navbar;
