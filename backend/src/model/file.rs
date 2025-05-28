@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -24,6 +24,13 @@ pub struct ResponseFile {
     pub size: i64,
     pub thumbnail_url: Option<String>,
     pub file_type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct NewFolderRequest {
+    pub parent_id: String,
+    pub owner_id: String,
+    pub name: String,
 }
 pub fn file_to_response_file(file: File) -> ResponseFile {
     ResponseFile {
