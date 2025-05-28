@@ -1,0 +1,15 @@
+// DEFINE TABLE Files TYPE NORMAL SCHEMALESS PERMISSIONS NONE;
+
+// -- ------------------------------
+// -- FIELDS
+// -- ------------------------------
+
+// DEFINE FIELD isFile ON Files TYPE bool DEFAULT false PERMISSIONS FULL;
+// DEFINE FIELD isStarred ON Files TYPE bool DEFAULT false PERMISSIONS FULL;
+// DEFINE FIELD name ON Files TYPE string PERMISSIONS FULL;
+// DEFINE FIELD parent ON Files TYPE record<Files> PERMISSIONS FULL;
+// DEFINE FIELD path ON Files TYPE string PERMISSIONS FULL;
+// DEFINE FIELD size ON Files TYPE int DEFAULT 0 PERMISSIONS FULL;
+// DEFINE FIELD thumbnailUtl ON Files TYPE string PERMISSIONS FULL;
+// DEFINE FIELD type ON Files TYPE string PERMISSIONS FULL;
+// DEFINE FIELD user ON Files TYPE record<User> PERMISSIONS FULL;

@@ -1,0 +1,17 @@
+[package]
+name = "backend"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+serde = { version = "1.0.209", features = ["derive"] }
+surrealdb = "2.0.4"
+actix-web = "4.11.0"
+actix-cors = "0.7.1"
+
+[profile.release]
+lto = true
+strip = true
+opt-level = 3
+panic = 'abort'
+codegen-units = 1

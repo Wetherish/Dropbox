@@ -1,0 +1,27 @@
+#navbar {
+    display: flex;
+    flex-direction: row;
+}
+
+#navbar a {
+    color: #ffffff;
+    margin-right: 20px;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+#navbar a:hover {
+    cursor: pointer;
+    color: #91a4d2;
+}
+
+#login {
+    margin-left: auto;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+#login a:hover {
+    color: darkturquoise;
+}
