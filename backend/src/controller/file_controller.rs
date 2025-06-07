@@ -13,7 +13,19 @@ pub async fn hello() -> impl Responder {
 #[get("/directoryy/{dir_id}")]
 pub async fn open_dir(path: web::Path<String>) -> Result<Json<Vec<ResponseFile>>> {
     let dir_id = path.into_inner();
-    let res = Database::get_dir_contents(&dir_id).await;
+    let mut res = Database::get_dir_contents(&dir_id).await;
+    let back = Database::get_file(&dir_id).await;
+    match back {
+        Some(mut f) => {
+            f.name = "..".to_string();
+            f.id = f.parent.clone();
+            res.push(f);
+            dbg!(&res);
+        }
+        None => {
+            // dbg!(&res);
+        }
+    };
     Ok(Json(files_to_response_files(res)))
 }
 

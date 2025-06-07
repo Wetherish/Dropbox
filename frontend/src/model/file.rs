@@ -1,8 +1,8 @@
 use dioxus::prelude::server_fn::serde::{Deserialize, Serialize};
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 pub struct File {
-    pub id: Option<String>,
+    pub id: String,
     pub is_file: bool,
     pub is_starred: bool,
     pub name: String,

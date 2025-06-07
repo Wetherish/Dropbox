@@ -1,0 +1,49 @@
+#new_dir {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+#new_dir h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    color: #ffffff;
+}
+
+.folder-input {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: #1a1a1a;
+    color: #f1f1f1;
+}
+
+.folder-input::placeholder {
+    color: #777;
+}
+
+.folder-input:focus {
+    border-color: #3b82f6;
+    outline: none;
+}
+
+.create-button {
+    background-color: #3b82f6;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.create-button:hover {
+    background-color: #2563eb;
+}
+
+.feedback {
+    font-size: 0.95rem;
+    color: #22c55e;
+}

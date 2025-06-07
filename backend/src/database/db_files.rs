@@ -10,6 +10,15 @@ impl Database {
         files
     }
 
+    pub async fn get_file(dir_id: &str) -> Option<File> {
+        dbg!(dir_id);
+        let sql = format!("SELECT * FROM Files WHERE id = {}", dir_id);
+        let mut res = DB.query(sql).await.unwrap();
+        let file: Option<File> = res.take(0).unwrap();
+        dbg!(&file);
+        file
+    }
+
     pub async fn create_file(file: File) {
         let file: Option<File> = DB.create(FILES).content(file).await.expect("REASON");
         dbg!(file);

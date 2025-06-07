@@ -1,6 +1,5 @@
 use crate::controller::file_controller::{create_folder, get_users_file, hello, open_dir};
 use actix_cors::Cors;
-use actix_web::http::header;
 use actix_web::{App, HttpServer, web};
 use std::sync::LazyLock;
 use surrealdb::Surreal;
