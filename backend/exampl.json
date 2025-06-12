@@ -1,0 +1,26 @@
+[
+  {
+    "file_type": "text/plain",
+    "id": "Files:iawtsumziebwx1oustna",
+    "is_file": true,
+    "is_starred": false,
+    "name": "root_example.txt",
+    "parent": "Files:root",
+    "path": "/root_example.txt",
+    "size": 2048,
+    "thumbnail_url": "http://example.com/root_thumbnail.jpg",
+    "user": "User:user_id"
+  },
+  {
+    "file_type": "directory",
+    "id": "Files:root",
+    "is_file": true,
+    "is_starred": false,
+    "name": "Root",
+    "parent": "Files:root",
+    "path": "/",
+    "size": 0,
+    "thumbnail_url": "http://example.com/root_thumbnail.jpg",
+    "user": "User:user_id"
+  }
+]

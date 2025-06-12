@@ -12,8 +12,8 @@ enum Route {
     #[layout(Navbar)]
         #[route("/")]
         Home {},
-        #[route("/dashboard/")]
-        Dashboard { id: i32 },
+        #[route("/dashboard/:root_id")]
+        Dashboard { root_id: String },
         #[route("/file/:id")]
         File { id: i32 },
         #[route("/login")]

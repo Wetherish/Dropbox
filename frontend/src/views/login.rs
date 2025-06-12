@@ -1,10 +1,9 @@
-use crate::components::{Echo, Hero};
+use crate::components::Create_user;
 use dioxus::prelude::*;
 
 #[component]
 pub fn Login() -> Element {
     rsx! {
-        Hero {}
-        Echo {}
+        Create_user {}
     }
 }

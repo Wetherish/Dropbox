@@ -4,12 +4,7 @@ use crate::model::file::File;
 use crate::model::user::User;
 
 impl Database {
-    pub async fn get_user() -> Vec<User> {
-        let users: Vec<User> = DB.select("User").await.expect("REASON");
-        users
-    }
-
-    pub async fn create_user(user: User) {
+    pub async fn create_user(user: User) -> Option<surrealdb::RecordId> {
         let user: User = DB
             .create("User")
             .content(user)
@@ -17,21 +12,23 @@ impl Database {
             .expect("REASON")
             .unwrap();
         dbg!(&user);
-        let root_dir: Option<File> = DB
-            .create("Files")
-            .content(File {
-                id: None,
-                name: "root".to_string(),
-                is_file: false,
-                is_starred: false,
-                owner: user.id.unwrap(),
-                parent: None,
-                size: 0,
-                thumbnail_url: Some("path/to/dir".to_string()),
-                file_type: "".to_string(),
-            })
-            .await
-            .expect("REASON");
-        dbg!(&root_dir);
+        let id = create_root_dir(user.id.unwrap()).await;
+        dbg!(&id);
+        Some(id?)
     }
+}
+
+async fn create_root_dir(owener_id: surrealdb::RecordId) -> Option<surrealdb::RecordId> {
+    let file = File {
+        id: None,
+        name: "root".to_string(),
+        is_file: false,
+        is_starred: false,
+        owner: owener_id,
+        parent: None,
+        size: 0,
+        thumbnail_url: Some("path/to/dir".to_string()),
+        file_type: "dir".to_string(),
+    };
+    Database::create_file(file).await.unwrap().id
 }

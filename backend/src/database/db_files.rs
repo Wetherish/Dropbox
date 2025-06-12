@@ -4,15 +4,16 @@ use crate::model::file::File;
 
 const FILES: &str = "Files";
 impl Database {
-    pub async fn get_files() -> Vec<File> {
-        let files: Vec<File> = DB.select(FILES).await.expect("REASON");
-        dbg!(&files);
-        files
+    pub async fn get_file(dir_id: &str) -> Option<File> {
+        let sql = format!("SELECT * FROM Files WHERE id = {}", dir_id);
+        let mut res = DB.query(sql).await.unwrap();
+        let file: Option<File> = res.take(0).unwrap();
+        file
     }
 
-    pub async fn create_file(file: File) {
+    pub async fn create_file(file: File) -> Option<File> {
         let file: Option<File> = DB.create(FILES).content(file).await.expect("REASON");
-        dbg!(file);
+        file
     }
 
     pub async fn get_dir_contents(dir_id: &str) -> Vec<File> {

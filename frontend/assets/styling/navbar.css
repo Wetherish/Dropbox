@@ -1,27 +1,46 @@
 #navbar {
     display: flex;
-    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(10px);
+    padding: 1rem 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    position: sticky;
+    top: 0;
+    z-index: 100;
 }
 
 #navbar a {
-    color: #ffffff;
+    color: #e0e0e0;
     margin-right: 20px;
     text-decoration: none;
+    font-weight: 500;
     transition: color 0.2s ease;
 }
 
 #navbar a:hover {
-    cursor: pointer;
     color: #91a4d2;
+}
+
+#navbar .nav-left {
+    display: flex;
+    gap: 20px;
 }
 
 #login {
     margin-left: auto;
     padding: 0.5rem 1rem;
     border-radius: 8px;
-    font-weight: bold;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: #f0f0f0;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
-#login a:hover {
+#login:hover {
+    background: rgba(255, 255, 255, 0.12);
     color: darkturquoise;
 }

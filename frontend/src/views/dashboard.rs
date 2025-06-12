@@ -1,75 +1,102 @@
-use crate::Route;
+use crate::components::{File_item, New_dir};
+use crate::model::file::File;
 use dioxus::prelude::*;
-use crate::model::file::{File, NewFolderRequest};
 
-const BLOG_CSS: Asset = asset!("/assets/styling/blog.css");
+const DASHBOARD: Asset = asset!("/assets/styling/dashboard.css");
 
 #[component]
-pub fn Dashboard(id: i32) -> Element {
-    let file_id = 0;
-    let mut fetch_directory = use_resource(|| async move {
-        reqwest::get("http://localhost:8080/directoryy/Files:documents_bartek")
-            .await
-            .unwrap()
+pub fn Dashboard(root_id: String) -> Element {
+    dbg!(&root_id);
+    let mut show_new_dir_modal = use_signal(|| false);
+    let mut dashboard_link = use_signal(|| root_id);
+
+    let open_directory: Resource<Result<Vec<File>, reqwest::Error>> = use_resource(move || {
+        let current_id = dashboard_link.read().to_string();
+        async move {
+            reqwest::get(&format!(
+                "http://localhost:8080/open_directory/{}",
+                current_id
+            ))
+            .await?
             .json::<Vec<File>>()
             .await
+        }
     });
 
-    let mut new_dir_name = use_signal(|| String::new());
-    let parent = "Files:documents_bartek".to_string();
-    let owner = "User:bartek".to_string();
-    let mut fetch = use_signal(|| "Click to start a request".to_string());
-    match &*fetch_directory.read_unchecked() {
-        Some(Ok(response)) => rsx! {
-        div {
-        document::Link { rel: "stylesheet", href: BLOG_CSS }
-        div {
-            h2 { "My Files" }
-                button {
-                        onclick: move |_| {
-                                let value1 = owner.clone();
-                                let value2 = parent.clone();
-                                async move {
-                                    fetch_directory.restart();
-                                    let resp = reqwest::Client::new()
-                                        .post("http://localhost:8080/directory/")
-                                        .json(&NewFolderRequest{
-                                            parent_id: value2,
-                                            owner_id: value1,
-                                            name: new_dir_name.to_string(),
-                                        })
-                                        .send()
-                                        .await;
+    let fetch_directory: Resource<Result<File, reqwest::Error>> = use_resource(move || {
+        let current_id = dashboard_link.read().to_string();
+        async move {
+            reqwest::get(&format!("http://localhost:8080/get_dir/{}", current_id))
+                .await?
+                .json::<File>()
+                .await
+        }
+    });
 
-                                    if resp.is_ok() {
-                                        fetch.set("ehh".into());
-                                    } else  {
-                                        fetch.set("failed to fetch response!".into());
+    rsx! {
+        div { id: "dashboard",
+            document::Link { rel: "stylesheet", href: DASHBOARD }
+            div { class: "sidebar",
+                h3 { "Folders" }
+                a { href: "#", "All files" }
+                a { href: "#", "Favorites" }
+            }
+            div { class: "main-content",
+                match &*fetch_directory.read() {
+                    Some(Ok(response)) => rsx! {
+                        div { class: "toolbar",
+                            button { "Create" }
+                            button { "Upload" }
+                            button {
+                                onclick: move |_| show_new_dir_modal.set(true),
+                                "Create folder"
+                            }
+                        }
+                        {(*show_new_dir_modal.read()).then(|| rsx! {
+                            div { class: "modal-overlay",
+                                div { class: "modal",
+                                    button {
+                                        class: "close-button",
+                                        onclick: move |_| show_new_dir_modal.set(false),
+                                        "×"
+                                    }
+                                    New_dir {
+                                        owner_id: response.owner.clone(),
+                                        parent_id: response.id.clone()
                                     }
                                 }
-                            },
-                            "{fetch}"
-                    }
-               input {
-                    value: "{new_dir_name}",
-                    oninput: move |e| new_dir_name.set(e.value().clone()),
-                    placeholder: "New folder name",
+                            }
+                        })}
+                    },
+                    Some(Err(err)) => rsx! {
+                        div { "Loading files failed: {err}" }
+                    },
+                    None => rsx! {
+                        div { "Loading files..." }
+                    },
                 }
-            ul {
-                for file in response {
-                    li {
-                        Link { to: Route::File { id: file_id }, "{file.name}" }
-                    }
+                match &*open_directory.read() {
+                    Some(Ok(response)) => rsx! {
+                        div { class: "folder-grid",
+                            div {"elems: "{response.len();}  }
+                            for file in response {
+                                File_item {
+                                    file: file.clone(),
+                                    on_folder_click: move |file_id: String| {
+                                        dashboard_link.set(file_id);
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    Some(Err(err)) => rsx! {
+                        div { "Loading files failed: {err}" }
+                    },
+                    None => rsx! {
+                        div { "Loading files..." }
+                    },
                 }
             }
         }
-        }
-    },
-        Some(Err(eee)) => rsx! {
-        div { "Loading dogs failed {eee}" }
-    },
-        None => rsx! {
-        div { "Loading dogs..." }
-    },
     }
 }

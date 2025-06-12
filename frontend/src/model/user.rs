@@ -7,3 +7,20 @@ pub struct User {
     pub password: String,
     pub email: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct NewUserRequest {
+    pub username: String,
+    pub password: String,
+    pub email: String,
+}
+
+impl NewUserRequest {
+    pub fn new() -> NewUserRequest {
+        return NewUserRequest {
+            username: String::from(""),
+            password: String::from(""),
+            email: String::from(""),
+        };
+    }
+}

@@ -1,0 +1,118 @@
+#body {
+margin: 0;
+font-family: "Segoe UI", sans-serif;
+background: #0f0f0f;
+color: #e0e0e0;
+}
+
+#dashboard {
+display: flex;
+height: 100vh;
+background: url("/assets/background.jpg") center/cover no-repeat fixed;
+}
+
+.sidebar {
+width: 200px;
+background: rgba(0, 0, 0, 0.7);
+backdrop-filter: blur(10px);
+padding: 20px;
+display: flex;
+flex-direction: column;
+gap: 16px;
+border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sidebar h3 {
+margin-bottom: 12px;
+font-size: 1.2rem;
+color: #ffffff;
+}
+
+.sidebar a {
+color: #bdbdbd;
+text-decoration: none;
+padding: 8px 0;
+transition: color 0.2s;
+}
+
+.sidebar a:hover {
+color: #ffffff;
+}
+
+.main-content {
+flex: 1;
+padding: 20px;
+overflow-y: auto;
+backdrop-filter: blur(8px);
+background: rgba(0, 0, 0, 0.35);
+}
+
+.toolbar {
+display: flex;
+gap: 12px;
+margin-bottom: 24px;
+}
+
+.toolbar button {
+background-color: rgba(255, 255, 255, 0.06);
+color: #f0f0f0;
+border: 1px solid rgba(255, 255, 255, 0.12);
+border-radius: 6px;
+padding: 8px 16px;
+font-size: 0.95rem;
+cursor: pointer;
+transition: background-color 0.2s;
+}
+
+.toolbar button:hover {
+background-color: rgba(255, 255, 255, 0.12);
+}
+
+.folder-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 20px;
+}
+
+.folder-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+}
+
+.folder {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(6px);
+    border-radius: 12px;
+    padding: 20px 12px;
+    text-align: center;
+    color: #f0f0f0;
+    transition:
+        background 0.2s,
+        transform 0.2s;
+}
+
+.folder:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.03);
+}
+
+.folder-icon {
+    font-size: 2.2rem;
+    margin-bottom: 8px;
+    color: #facc15; /* folder yellow */
+}
+
+.folder-name {
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: #e0e0e0;
+}
+
+.folder-icon + .folder-name.file {
+    color: #3b82f6; /* file blue */
+}
