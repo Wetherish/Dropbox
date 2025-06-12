@@ -1,5 +1,7 @@
 use crate::database::connection::Database;
-use crate::model::file::{File, NewFolderRequest, ResponseFile, files_to_response_files};
+use crate::model::file::{
+    File, NewFolderRequest, ResponseFile, file_to_response_file, files_to_response_files,
+};
 use crate::web::Json;
 use actix_web::{HttpResponse, Responder, Result, get, post, web};
 use std::str::FromStr;
@@ -10,30 +12,26 @@ pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
 }
 
-#[get("/directoryy/{dir_id}")]
+#[get("/open_directory/{dir_id}")]
 pub async fn open_dir(path: web::Path<String>) -> Result<Json<Vec<ResponseFile>>> {
     let dir_id = path.into_inner();
-    let mut res = Database::get_dir_contents(&dir_id).await;
-    let back = Database::get_file(&dir_id).await;
-    match back {
-        Some(mut f) => {
-            f.name = "..".to_string();
-            f.id = f.parent.clone();
-            res.push(f);
-            dbg!(&res);
-        }
-        None => {
-            // dbg!(&res);
-        }
-    };
+    dbg!(&dir_id);
+    let res: Vec<File> = Database::get_dir_contents(&dir_id).await;
+    dbg!(res.len());
     Ok(Json(files_to_response_files(res)))
+}
+
+#[get("/get_dir/{dir_id}")]
+pub async fn get(path: web::Path<String>) -> Result<Json<ResponseFile>> {
+    let dir_id = path.into_inner();
+    dbg!(&dir_id);
+    let back = Database::get_file(&dir_id).await;
+    Ok(Json(file_to_response_file(back.unwrap())))
 }
 
 #[post("/directory/")]
 pub async fn create_folder(req_file: web::Json<NewFolderRequest>) -> Result<String> {
-    dbg!(&req_file);
     let file = req_file.into_inner();
-    dbg!(&file);
     let new_dir = File {
         id: None,
         owner: RecordId::from_str(&file.owner_id).unwrap(),

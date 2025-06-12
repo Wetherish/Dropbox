@@ -6,18 +6,29 @@ const DASHBOARD: Asset = asset!("/assets/styling/dashboard.css");
 
 #[component]
 pub fn Dashboard(root_id: String) -> Element {
-    let parent = "Files:documents_bartek".to_string();
-    let owner = "User:bartek".to_string();
+    dbg!(&root_id);
     let mut show_new_dir_modal = use_signal(|| false);
-    let dashboard_link = use_signal(|| root_id);
+    let mut dashboard_link = use_signal(|| root_id);
 
-    let fetch_directory = use_resource(move || {
+    let open_directory: Resource<Result<Vec<File>, reqwest::Error>> = use_resource(move || {
         let current_id = dashboard_link.read().to_string();
         async move {
-            reqwest::get(format!("http://localhost:8080/directoryy/{}", current_id))
-                .await
-                .unwrap()
-                .json::<Vec<File>>()
+            reqwest::get(&format!(
+                "http://localhost:8080/open_directory/{}",
+                current_id
+            ))
+            .await?
+            .json::<Vec<File>>()
+            .await
+        }
+    });
+
+    let fetch_directory: Resource<Result<File, reqwest::Error>> = use_resource(move || {
+        let current_id = dashboard_link.read().to_string();
+        async move {
+            reqwest::get(&format!("http://localhost:8080/get_dir/{}", current_id))
+                .await?
+                .json::<File>()
                 .await
         }
     });
@@ -31,38 +42,49 @@ pub fn Dashboard(root_id: String) -> Element {
                 a { href: "#", "Favorites" }
             }
             div { class: "main-content",
-                div { class: "toolbar",
-                    button { "Create" }
-                    button { "Upload" }
-                    button {
-                        onclick: move |_| show_new_dir_modal.set(true),
-                        "Create folder"
-                    }
-                }
-                if *show_new_dir_modal.read() {
-                    div { class: "modal-overlay",
-                        div { class: "modal",
+                match &*fetch_directory.read() {
+                    Some(Ok(response)) => rsx! {
+                        div { class: "toolbar",
+                            button { "Create" }
+                            button { "Upload" }
                             button {
-                                class: "close-button",
-                                onclick: move |_| show_new_dir_modal.set(false),
-                                "×"
+                                onclick: move |_| show_new_dir_modal.set(true),
+                                "Create folder"
                             }
-                            New_dir { owner_id: owner.clone(), parent_id: parent.clone() }
                         }
-                    }
+                        {(*show_new_dir_modal.read()).then(|| rsx! {
+                            div { class: "modal-overlay",
+                                div { class: "modal",
+                                    button {
+                                        class: "close-button",
+                                        onclick: move |_| show_new_dir_modal.set(false),
+                                        "×"
+                                    }
+                                    New_dir {
+                                        owner_id: response.owner.clone(),
+                                        parent_id: response.id.clone()
+                                    }
+                                }
+                            }
+                        })}
+                    },
+                    Some(Err(err)) => rsx! {
+                        div { "Loading files failed: {err}" }
+                    },
+                    None => rsx! {
+                        div { "Loading files..." }
+                    },
                 }
-                match &*fetch_directory.read_unchecked() {
+                match &*open_directory.read() {
                     Some(Ok(response)) => rsx! {
                         div { class: "folder-grid",
+                            div {"elems: "{response.len();}  }
                             for file in response {
                                 File_item {
                                     file: file.clone(),
-                                    on_folder_click: Some(EventHandler::new({
-                                        let mut dashboard_link = dashboard_link.clone();
-                                        move |file_id: String| {
-                                            dashboard_link.set(file_id);
-                                        }
-                                    }))
+                                    on_folder_click: move |file_id: String| {
+                                        dashboard_link.set(file_id);
+                                    }
                                 }
                             }
                         }
