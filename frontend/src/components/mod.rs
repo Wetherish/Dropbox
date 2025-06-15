@@ -16,3 +16,6 @@ pub use create_user::Create_user;
 
 mod file_item;
 pub use file_item::File_item;
+
+mod login;
+pub use login::login_component;

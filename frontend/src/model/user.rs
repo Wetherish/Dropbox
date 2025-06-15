@@ -15,6 +15,12 @@ pub struct NewUserRequest {
     pub email: String,
 }
 
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LoginRequest {
+    pub email: String,
+    pub password: String,
+}
+
 impl NewUserRequest {
     pub fn new() -> NewUserRequest {
         return NewUserRequest {

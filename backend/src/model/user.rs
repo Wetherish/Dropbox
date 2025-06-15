@@ -34,3 +34,9 @@ pub struct UserRequest {
     pub password: String,
     pub email: String,
 }
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct LoginRequest {
+    pub email: String,
+    pub password: String,
+}

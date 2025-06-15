@@ -1,5 +1,5 @@
 use crate::controller::file_controller::{create_folder, get, get_users_file, hello, open_dir};
-use crate::controller::user_controller::create_user;
+use crate::controller::user_controller::{create_user, get_user, get_user_root_dir};
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
 use actix_web::{App, HttpServer, web};
@@ -33,6 +33,8 @@ async fn main() -> std::io::Result<()> {
             .service(get_users_file)
             .service(open_dir)
             .service(get)
+            .service(get_user)
+            .service(get_user_root_dir)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
