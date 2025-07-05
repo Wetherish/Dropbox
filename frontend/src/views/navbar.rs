@@ -11,8 +11,13 @@ pub fn Navbar() -> Element {
         div { id: "navbar",
             div { id: "nav-left",
                 Link { to: Route::Home {}, "Home" }
-                Link { to: Route::Dashboard { root_id: "Files:documents_bartek".to_string() }, "Dashboard" }
-                Link { to: Route::File { id: 1 },  "File" }
+                Link {
+                    to: Route::Dashboard {
+                        root_id: "Files:documents_bartek".to_string(),
+                    },
+                    "Dashboard"
+                }
+                Link { to: Route::File { id: 1 }, "File" }
             }
 
             div { id: "login",

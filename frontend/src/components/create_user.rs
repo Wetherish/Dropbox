@@ -12,15 +12,10 @@ pub fn Create_user() -> Element {
 
     rsx! {
         document::Link { rel: "stylesheet", href: CREATE_NEW_USER }
-        div {
-            class: "new-user-form",
+        div { class: "new-user-form",
             h2 { "Create New User" }
-            div {
-                class: "input-group",
-                label {
-                    r#for: "username",
-                    "Username:"
-                }
+            div { class: "input-group",
+                label { r#for: "username", "Username:" }
                 input {
                     id: "username",
                     r#type: "text",
@@ -29,12 +24,8 @@ pub fn Create_user() -> Element {
                     oninput: move |evt| username.set(evt.value()),
                 }
             }
-            div {
-                class: "input-group",
-                label {
-                    r#for: "email",
-                    "Email:"
-                }
+            div { class: "input-group",
+                label { r#for: "email", "Email:" }
                 input {
                     id: "email",
                     r#type: "email",
@@ -43,12 +34,8 @@ pub fn Create_user() -> Element {
                     oninput: move |evt| email.set(evt.value()),
                 }
             }
-            div {
-                class: "input-group",
-                label {
-                    r#for: "password",
-                    "Password:"
-                }
+            div { class: "input-group",
+                label { r#for: "password", "Password:" }
                 input {
                     id: "password",
                     r#type: "password",
@@ -57,20 +44,17 @@ pub fn Create_user() -> Element {
                     oninput: move |evt| password.set(evt.value()),
                 }
             }
-            div {
-                class: "button-group",
+            div { class: "button-group",
                 button {
                     r#type: "submit",
                     onclick: move |_| {
                         println!("Username: {}", username());
                         println!("Email: {}", email());
                         println!("Password: {}", password());
-
                         let mut user_req = NewUserRequest::new();
                         user_req.password = password();
                         user_req.username = username();
                         user_req.email = email();
-
                         let nav = nav.clone();
                         spawn(async move {
                             let client = reqwest::Client::new();
@@ -79,7 +63,6 @@ pub fn Create_user() -> Element {
                                 .json(&user_req)
                                 .send()
                                 .await;
-
                             match resp {
                                 Ok(response) => {
                                     println!("User created successfully: {:?}", response.status());
@@ -87,9 +70,7 @@ pub fn Create_user() -> Element {
                                         Ok(root_id) => {
                                             let mut id = String::from("Files:");
                                             id.push_str(&root_id);
-                                            nav.push(Route::Dashboard {
-                                                root_id: id
-                                            });
+                                            nav.push(Route::Dashboard { root_id: id });
                                         }
                                         Err(e) => {
                                             println!("Error reading response: {:?}", e);

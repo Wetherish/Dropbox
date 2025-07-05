@@ -48,9 +48,7 @@ pub fn File_input() -> Element {
                                         let mime = file.type_();
                                         let blob_ref: &Blob = file.as_ref();
                                         let gloo_blob = GlooBlob::from(blob_ref.clone());
-
                                         upload_status.set("📤 Starting upload...".to_string());
-
                                         let upload_req = FileUploadRequest {
                                             name: file_name.clone(),
                                             owner: "User:pgpefl2i1fyp0qb7jefy".to_string(),
@@ -58,20 +56,17 @@ pub fn File_input() -> Element {
                                             size: size as i64,
                                             file_type: mime,
                                         };
-
                                         let resp = Request::post("http://localhost:8080/upload_url")
                                             .header("Content-Type", "application/json")
                                             .body(serde_json::to_string(&upload_req).unwrap())
                                             .unwrap()
                                             .send()
                                             .await;
-
                                         match resp {
                                             Ok(res) => {
                                                 match res.text().await {
                                                     Ok(upload_url) => {
                                                         upload_status.set("📤 Uploading file...".to_string());
-
                                                         match read_as_bytes(&gloo_blob).await {
                                                             Ok(bytes) => {
                                                                 let upload_resp = Request::put(upload_url.trim())
@@ -79,7 +74,6 @@ pub fn File_input() -> Element {
                                                                     .unwrap()
                                                                     .send()
                                                                     .await;
-
                                                                 match upload_resp {
                                                                     Ok(_) => {
                                                                         upload_status.set("✅ Upload successful".to_string());
@@ -95,7 +89,8 @@ pub fn File_input() -> Element {
                                                         }
                                                     }
                                                     Err(e) => {
-                                                        upload_status.set(format!("❌ Failed to get upload URL: {e}"));
+                                                        upload_status
+                                                            .set(format!("❌ Failed to get upload URL: {e}"));
                                                     }
                                                 }
                                             }
@@ -107,7 +102,7 @@ pub fn File_input() -> Element {
                                 }
                             }
                         }
-                    }
+                    },
                 }
                 span { class: "upload-icon", "📁" }
                 span { class: "upload-text", "Choose File" }

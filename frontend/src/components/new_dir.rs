@@ -22,7 +22,7 @@ pub fn New_dir(
                 value: "{new_dir_name}",
                 oninput: move |e| new_dir_name.set(e.value().clone()),
                 placeholder: "Enter folder name",
-                disabled: *is_creating.read()
+                disabled: *is_creating.read(),
             }
             button {
                 class: "create-button",
@@ -32,31 +32,28 @@ pub fn New_dir(
                     let value2 = parent_id.clone();
                     let name = new_dir_name.read().trim().to_string();
                     let on_success = on_success.clone();
-
                     if name.is_empty() {
                         fetch.set("Please enter a folder name.".into());
                         return;
                     }
-
                     spawn(async move {
                         is_creating.set(true);
                         fetch.set("Creating folder...".into());
-
                         let resp = reqwest::Client::new()
                             .post("http://localhost:8080/directory/")
-                            .json(&NewFolderRequest {
-                                parent_id: value2,
-                                owner_id: value1,
-                                name,
-                            })
+                            .json(
+                                &NewFolderRequest {
+                                    parent_id: value2,
+                                    owner_id: value1,
+                                    name,
+                                },
+                            )
                             .send()
                             .await;
-
                         match resp {
                             Ok(response) if response.status().is_success() => {
                                 fetch.set("Folder created successfully!".into());
                                 new_dir_name.set(String::new());
-
                                 if let Some(callback) = on_success {
                                     callback.call(());
                                 }
@@ -72,7 +69,11 @@ pub fn New_dir(
                         }
                     });
                 },
-                if *is_creating.read() { "Creating..." } else { "Create Folder" }
+                if *is_creating.read() {
+                    "Creating..."
+                } else {
+                    "Create Folder"
+                }
             }
             if !fetch.read().is_empty() {
                 p { class: "feedback", "{fetch}" }

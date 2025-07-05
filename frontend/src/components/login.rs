@@ -13,15 +13,10 @@ pub fn login_component() -> Element {
 
     rsx! {
         document::Link { rel: "stylesheet", href: CREATE_NEW_USER }
-        div {
-            class: "new-user-form",
+        div { class: "new-user-form",
             h2 { "Login" }
-            div {
-                class: "input-group",
-                label {
-                    r#for: "email",
-                    "Email:"
-                }
+            div { class: "input-group",
+                label { r#for: "email", "Email:" }
                 input {
                     id: "email",
                     r#type: "email",
@@ -30,12 +25,8 @@ pub fn login_component() -> Element {
                     oninput: move |evt| email.set(evt.value()),
                 }
             }
-            div {
-                class: "input-group",
-                label {
-                    r#for: "password",
-                    "Password:"
-                }
+            div { class: "input-group",
+                label { r#for: "password", "Password:" }
                 input {
                     id: "password",
                     r#type: "password",
@@ -44,19 +35,16 @@ pub fn login_component() -> Element {
                     oninput: move |evt| password.set(evt.value()),
                 }
             }
-            div {
-                class: "button-group",
+            div { class: "button-group",
                 button {
                     r#type: "submit",
                     onclick: move |_| {
                         println!("Email: {}", email());
                         println!("Password: {}", password());
-
                         let login = LoginRequest {
                             email: email(),
                             password: password(),
                         };
-
                         let nav = nav.clone();
                         spawn(async move {
                             let client = reqwest::Client::new();
@@ -65,16 +53,19 @@ pub fn login_component() -> Element {
                                 .json(&login)
                                 .send()
                                 .await;
-
                             match resp {
                                 Ok(response) => {
                                     println!("User created successfully: {:?}", response.status());
                                     match response.text().await {
                                         Ok(root_id_value) => {
-                                            // Fetch the root directory using the received root_id
                                             let client = reqwest::Client::new();
                                             match client
-                                                .get(format!("http://localhost:8080/get_root_dir/{}", root_id_value))
+                                                .get(
+                                                    format!(
+                                                        "http://localhost:8080/get_root_dir/{}",
+                                                        root_id_value,
+                                                    ),
+                                                )
                                                 .send()
                                                 .await
                                             {
@@ -84,9 +75,7 @@ pub fn login_component() -> Element {
                                                             root_id.set(root_dir.clone());
                                                             let mut id = String::from("Files:");
                                                             id.push_str(&root_dir);
-                                                            nav.push(Route::Dashboard {
-                                                                root_id: id
-                                                            });
+                                                            nav.push(Route::Dashboard { root_id: id });
                                                         }
                                                         Err(e) => {
                                                             println!("Error reading root dir response: {:?}", e);

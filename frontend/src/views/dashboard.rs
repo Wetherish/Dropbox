@@ -52,22 +52,19 @@ pub fn Dashboard(root_id: String) -> Element {
                         div { class: "toolbar",
                             button { "Create" }
                             File_input {}
-                            button {
-                                onclick: move |_| show_new_dir_modal.set(true),
-                                "Create folder"
-                            }
+                            button { onclick: move |_| show_new_dir_modal.set(true), "Create folder" }
                         }
                         {(*show_new_dir_modal.read()).then(|| rsx! {
                             div {
-                                    button {
-                                        class: "close-button",
-                                        onclick: move |_| show_new_dir_modal.set(false),
-                                        "×"
-                                    }
-                                    New_dir {
-                                        owner_id: response.owner.clone(),
-                                        parent_id: response.id.clone(),
-                                        on_success: handle_dir_created
+                                button {
+                                    class: "close-button",
+                                    onclick: move |_| show_new_dir_modal.set(false),
+                                    "×"
+                                }
+                                New_dir {
+                                    owner_id: response.owner.clone(),
+                                    parent_id: response.id.clone(),
+                                    on_success: handle_dir_created,
                                 }
                             }
                         })}
@@ -82,13 +79,18 @@ pub fn Dashboard(root_id: String) -> Element {
                 match &*open_directory.read() {
                     Some(Ok(response)) => rsx! {
                         div { class: "folder-grid",
-                            div {"elems: "{response.len();}  }
+                            div {
+                                "elems: "
+                                {
+                                    response.len();
+                                }
+                            }
                             for file in response {
                                 File_item {
                                     file: file.clone(),
                                     on_folder_click: move |file_id: String| {
                                         dashboard_link.set(file_id);
-                                    }
+                                    },
                                 }
                             }
                         }
