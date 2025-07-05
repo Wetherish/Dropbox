@@ -19,3 +19,6 @@ pub use file_item::File_item;
 
 mod login;
 pub use login::login_component;
+
+mod file_input;
+pub use file_input::File_input;

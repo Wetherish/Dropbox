@@ -1,4 +1,4 @@
-use crate::{model::user::{LoginRequest}, Route};
+use crate::{model::user::LoginRequest, Route};
 use dioxus::prelude::*;
 
 const CREATE_NEW_USER: Asset = asset!("/assets/styling/new_user.css");
@@ -8,7 +8,7 @@ pub fn login_component() -> Element {
     let mut email = use_signal(|| String::new());
     let mut password = use_signal(|| String::new());
     let mut root_id = use_signal(|| String::new());
-    
+
     let nav = use_navigator();
 
     rsx! {

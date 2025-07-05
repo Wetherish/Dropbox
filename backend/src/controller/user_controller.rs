@@ -3,7 +3,7 @@ use crate::{
     model::user::{LoginRequest, User, UserRequest},
 };
 
-use actix_web::{get, post, web, Result};
+use actix_web::{Result, get, post, web};
 
 #[post("/new_user/")]
 pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String> {
@@ -19,11 +19,7 @@ pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String>
 
 #[post("/login/")]
 pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<String> {
-    let user = Database::get_user(
-        user_request.email.clone(),
-        user_request.password.clone(),
-    )
-    .await;
+    let user = Database::get_user(user_request.email.clone(), user_request.password.clone()).await;
     dbg!(&user_request);
     match user {
         Some(u) => Ok(String::from(u.id.unwrap().key().to_string())),

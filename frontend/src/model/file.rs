@@ -19,3 +19,13 @@ pub struct NewFolderRequest {
     pub owner_id: String,
     pub name: String,
 }
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct UploadRequestFile {
+    pub id_user: String,
+    pub name: String,
+    pub owner: String,
+    pub parent: String,
+    pub size: i64,
+    pub file_type: String,
+}

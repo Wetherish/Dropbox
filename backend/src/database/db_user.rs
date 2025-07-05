@@ -1,9 +1,7 @@
-use surrealdb::Response;
-
 use crate::DB;
 use crate::database::connection::Database;
 use crate::model::file::File;
-use crate::model::user::{self, User};
+use crate::model::user::User;
 
 impl Database {
     pub async fn create_user(user: User) -> Option<surrealdb::RecordId> {
@@ -30,14 +28,13 @@ impl Database {
         let user: Option<User> = res.take(0).unwrap();
         user
     }
-    
+
     pub async fn get_user_root_dir(user_id: String) -> Option<surrealdb::RecordId> {
-        let sql = format!("SELECT * FROM Files WHERE owner = {} AND is_file = false AND name = \"root\"", user_id);
-        let mut res = DB
-            .query(sql)
-            // .bind(("owner", user_id))
-            .await
-            .unwrap();
+        let sql = format!(
+            "SELECT * FROM Files WHERE owner = {} AND is_file = false AND name = \"root\"",
+            user_id
+        );
+        let mut res = DB.query(sql).await.unwrap();
         let dir: Option<File> = res.take(0).unwrap();
         dbg!(&dir);
         match dir {
@@ -45,7 +42,6 @@ impl Database {
             None => None,
         }
     }
-
 }
 
 async fn create_root_dir(owener_id: surrealdb::RecordId) -> Option<surrealdb::RecordId> {

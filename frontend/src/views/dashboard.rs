@@ -1,4 +1,4 @@
-use crate::components::{File_item, New_dir};
+use crate::components::{File_input, File_item, New_dir};
 use crate::model::file::File;
 use dioxus::prelude::*;
 
@@ -9,8 +9,7 @@ pub fn Dashboard(root_id: String) -> Element {
     dbg!(&root_id);
     let mut show_new_dir_modal = use_signal(|| false);
     let mut dashboard_link = use_signal(|| root_id);
-
-    let open_directory: Resource<Result<Vec<File>, reqwest::Error>> = use_resource(move || {
+    let mut open_directory: Resource<Result<Vec<File>, reqwest::Error>> = use_resource(move || {
         let current_id = dashboard_link.read().to_string();
         async move {
             reqwest::get(&format!(
@@ -23,7 +22,7 @@ pub fn Dashboard(root_id: String) -> Element {
         }
     });
 
-    let fetch_directory: Resource<Result<File, reqwest::Error>> = use_resource(move || {
+    let mut fetch_directory: Resource<Result<File, reqwest::Error>> = use_resource(move || {
         let current_id = dashboard_link.read().to_string();
         async move {
             reqwest::get(&format!("http://localhost:8080/get_dir/{}", current_id))
@@ -32,6 +31,12 @@ pub fn Dashboard(root_id: String) -> Element {
                 .await
         }
     });
+
+    let handle_dir_created = move |_| {
+        show_new_dir_modal.set(false);
+        fetch_directory.restart();
+        open_directory.restart();
+    };
 
     rsx! {
         div { id: "dashboard",
@@ -46,15 +51,14 @@ pub fn Dashboard(root_id: String) -> Element {
                     Some(Ok(response)) => rsx! {
                         div { class: "toolbar",
                             button { "Create" }
-                            button { "Upload" }
+                            File_input {}
                             button {
                                 onclick: move |_| show_new_dir_modal.set(true),
                                 "Create folder"
                             }
                         }
                         {(*show_new_dir_modal.read()).then(|| rsx! {
-                            div { class: "modal-overlay",
-                                div { class: "modal",
+                            div {
                                     button {
                                         class: "close-button",
                                         onclick: move |_| show_new_dir_modal.set(false),
@@ -62,8 +66,8 @@ pub fn Dashboard(root_id: String) -> Element {
                                     }
                                     New_dir {
                                         owner_id: response.owner.clone(),
-                                        parent_id: response.id.clone()
-                                    }
+                                        parent_id: response.id.clone(),
+                                        on_success: handle_dir_created
                                 }
                             }
                         })}

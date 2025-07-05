@@ -1,7 +1,10 @@
 use crate::database::connection::Database;
+
 use crate::model::file::{
-    File, NewFolderRequest, ResponseFile, file_to_response_file, files_to_response_files,
+    File, FileUploadRequest, NewFolderRequest, ResponseFile, file_to_response_file,
+    file_upload_request_to_file, files_to_response_files,
 };
+use crate::model::storage_client::BucketClient;
 use crate::web::Json;
 use actix_web::{HttpResponse, Responder, Result, get, post, web};
 use std::str::FromStr;
@@ -15,16 +18,13 @@ pub async fn hello() -> impl Responder {
 #[get("/open_directory/{dir_id}")]
 pub async fn open_dir(path: web::Path<String>) -> Result<Json<Vec<ResponseFile>>> {
     let dir_id = path.into_inner();
-    dbg!(&dir_id);
     let res: Vec<File> = Database::get_dir_contents(&dir_id).await;
-    dbg!(res.len());
     Ok(Json(files_to_response_files(res)))
 }
 
 #[get("/get_dir/{dir_id}")]
 pub async fn get(path: web::Path<String>) -> Result<Json<ResponseFile>> {
     let dir_id = path.into_inner();
-    dbg!(&dir_id);
     let back = Database::get_file(&dir_id).await;
     Ok(Json(file_to_response_file(back.unwrap())))
 }
@@ -51,4 +51,45 @@ pub async fn create_folder(req_file: web::Json<NewFolderRequest>) -> Result<Stri
 pub async fn get_users_file(path: web::Path<String>) -> Result<Json<Vec<File>>> {
     let result = Database::get_user_files(&path.into_inner()).await;
     Ok(Json(result))
+}
+
+#[get("/file_url/{id}")]
+pub async fn get_file_url(
+    bucket: web::Data<BucketClient>,
+    id: web::Path<String>,
+) -> Result<String> {
+    let file_id = id.into_inner();
+    let slice = &file_id[6..];
+    let url = bucket
+        .bucket
+        .presign_get(&slice, 3600 / 2, None)
+        .await
+        .unwrap();
+    Ok(url)
+}
+
+#[post("/upload_url")]
+pub async fn get_file_upload_url(
+    bucket: web::Data<BucketClient>,
+    request_json: web::Json<FileUploadRequest>,
+) -> Result<String> {
+    let request = request_json.into_inner();
+    let file = file_upload_request_to_file(request);
+    let file = Database::create_file(file).await;
+    let url = bucket
+        .bucket
+        .presign_put(
+            file.unwrap().id.unwrap().key().to_string(),
+            3600 / 2,
+            None,
+            None,
+        )
+        .await;
+    match url {
+        Ok(r_url) => Ok(r_url),
+        Err(e) => {
+            eprintln!("Error generating presigned URL: {:?}", e);
+            Err(actix_web::error::ErrorInternalServerError(e))
+        }
+    }
 }

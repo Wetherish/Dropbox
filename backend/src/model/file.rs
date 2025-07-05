@@ -1,3 +1,5 @@
+use std::str::FromStr;
+
 use serde::{Deserialize, Serialize};
 use surrealdb::RecordId;
 
@@ -13,6 +15,7 @@ pub struct File {
     pub thumbnail_url: Option<String>,
     pub file_type: String,
 }
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct ResponseFile {
     pub id: String,
@@ -27,11 +30,21 @@ pub struct ResponseFile {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct FileUploadRequest {
+    pub name: String,
+    pub owner: String,
+    pub parent: String,
+    pub size: i64,
+    pub file_type: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NewFolderRequest {
     pub parent_id: String,
     pub owner_id: String,
     pub name: String,
 }
+
 pub fn file_to_response_file(file: File) -> ResponseFile {
     ResponseFile {
         id: file.id.unwrap().to_string(),
@@ -48,4 +61,18 @@ pub fn file_to_response_file(file: File) -> ResponseFile {
 
 pub fn files_to_response_files(files: Vec<File>) -> Vec<ResponseFile> {
     files.into_iter().map(file_to_response_file).collect()
+}
+
+pub fn file_upload_request_to_file(request: FileUploadRequest) -> File {
+    File {
+        id: None,
+        is_file: true,
+        name: request.name,
+        file_type: request.file_type,
+        parent: Some(RecordId::from_str(&request.parent).unwrap()),
+        owner: RecordId::from_str(&request.owner).unwrap(),
+        size: request.size,
+        is_starred: false,
+        thumbnail_url: None,
+    }
 }

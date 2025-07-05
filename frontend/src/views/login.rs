@@ -5,7 +5,6 @@ const LOGIN: Asset = asset!("/assets/styling/login.css");
 
 #[component]
 pub fn Login() -> Element {
-
     let mut switch = use_signal(|| false);
     rsx! {
         div {
@@ -18,7 +17,7 @@ pub fn Login() -> Element {
                 login_component {}
             }
         }
-        button {  
+        button {
             class: "switch-button",
             onclick: move |_| switch.set(!switch()),
             if switch() {

@@ -29,7 +29,7 @@ impl Database {
             .query(sql)
             .bind(("owner", user_id.to_string()))
             .await
-            .unwrap();   
+            .unwrap();
         let files: Vec<File> = res.take(0).unwrap();
         files
     }

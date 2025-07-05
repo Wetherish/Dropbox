@@ -1,1 +1,1 @@
-pub struct Database;
+pub struct Database {}
