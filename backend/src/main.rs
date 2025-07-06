@@ -1,7 +1,4 @@
-use crate::controller::file_controller::{
-    create_folder, get, get_file_upload_url, get_file_url, get_users_file, hello, open_dir,
-};
-use crate::controller::user_controller::{create_user, get_user, get_user_root_dir};
+use crate::controller::configure_routes;
 use crate::model::storage_client::BucketClient;
 use actix_cors::Cors;
 use actix_web::middleware::Logger;
@@ -23,30 +20,23 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(web::Data::new(stoarge.clone()))
-            .wrap(
-                Cors::default()
-                    .allow_any_origin()
-                    .allow_any_method()
-                    .allow_any_header()
-                    .max_age(3600),
-            )
+            .wrap(create_cors_middleware())
             .wrap(Logger::default())
-            .service(hello)
-            .service(create_folder)
-            .service(create_user)
-            .service(get_users_file)
-            .service(open_dir)
-            .service(get)
-            .service(get_user)
-            .service(get_user_root_dir)
-            .service(get_file_url)
-            .service(get_file_upload_url)
+            .configure(configure_routes)
     })
     .bind(("127.0.0.1", 8080))?
     .run()
     .await
     .expect("TODO: panic message");
     Ok(())
+}
+
+fn create_cors_middleware() -> Cors {
+    Cors::default()
+        .allow_any_origin()
+        .allow_any_method()
+        .allow_any_header()
+        .max_age(3600)
 }
 
 async fn connect_db(path: &str, username: &str, password: &str, ns: &str, database: &str) {

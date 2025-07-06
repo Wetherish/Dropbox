@@ -7,7 +7,7 @@ const NEW_DIR_CSS: Asset = asset!("/assets/styling/new_dir.css");
 pub fn New_dir(
     owner_id: String,
     parent_id: String,
-    on_success: Option<EventHandler<()>>
+    on_success: Option<EventHandler<()>>,
 ) -> Element {
     let mut new_dir_name = use_signal(|| String::new());
     let mut fetch = use_signal(|| "".to_string());
