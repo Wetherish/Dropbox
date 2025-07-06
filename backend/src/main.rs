@@ -51,11 +51,8 @@ async fn main() -> std::io::Result<()> {
 
 async fn connect_db(path: &str, username: &str, password: &str, ns: &str, database: &str) {
     DB.connect(path).await.unwrap();
-    DB.signin(Root {
-        username: username,
-        password: password,
-    })
-    .await
-    .expect("Wrong Password");
+    DB.signin(Root { username, password })
+        .await
+        .expect("Wrong Password");
     DB.use_ns(ns).use_db(database).await.unwrap();
 }

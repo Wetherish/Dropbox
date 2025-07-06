@@ -11,14 +11,12 @@ impl Database {
             .await
             .expect("REASON")
             .unwrap();
-        dbg!(&user);
         let id = create_root_dir(user.id.unwrap()).await;
-        dbg!(&id);
-        Some(id?)
+        Some(id.unwrap())
     }
 
     pub async fn get_user(email: String, password: String) -> Option<User> {
-        let sql = format!("SELECT * FROM User WHERE email = $email AND password = $password");
+        let sql = "SELECT * FROM User WHERE email = $email AND password = $password".to_string();
         let mut res = DB
             .query(sql)
             .bind(("email", email))

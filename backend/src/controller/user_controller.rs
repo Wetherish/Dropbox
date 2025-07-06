@@ -14,7 +14,7 @@ pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String>
     ))
     .await;
     dbg!(&user_request);
-    Ok(String::from(root_id.unwrap().key().to_string()))
+    Ok(root_id.unwrap().key().to_string())
 }
 
 #[post("/login/")]
@@ -22,7 +22,7 @@ pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<String> {
     let user = Database::get_user(user_request.email.clone(), user_request.password.clone()).await;
     dbg!(&user_request);
     match user {
-        Some(u) => Ok(String::from(u.id.unwrap().key().to_string())),
+        Some(u) => Ok(u.id.unwrap().key().to_string()),
         None => Err(actix_web::error::ErrorNotFound("User not found")),
     }
 }
@@ -33,7 +33,7 @@ pub async fn get_user_root_dir(path: web::Path<String>) -> Result<String> {
     dbg!(&user_id);
     let root_dir = Database::get_user_root_dir(format!("User:{}", user_id)).await;
     match root_dir {
-        Some(dir) => Ok(String::from(dir.key().to_string())),
+        Some(dir) => Ok(dir.key().to_string()),
         None => Err(actix_web::error::ErrorNotFound("Root directory not found")),
     }
 }
