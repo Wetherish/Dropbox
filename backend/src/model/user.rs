@@ -23,9 +23,7 @@ impl User {
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct ResponseUser {
     pub id: String,
-    pub username: String,
-    pub password: String,
-    pub email: String,
+    pub root_id: String,
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]

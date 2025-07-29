@@ -1,9 +1,12 @@
 use crate::{
     database::connection::Database,
-    model::user::{LoginRequest, User, UserRequest},
+    model::user::{LoginRequest, ResponseUser, User, UserRequest},
 };
 
-use actix_web::{Result, get, post, web};
+use actix_web::{
+    Result, get, post,
+    web::{self, Json},
+};
 
 #[post("/new_user/")]
 pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String> {
@@ -18,11 +21,25 @@ pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String>
 }
 
 #[post("/login/")]
-pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<String> {
+pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<Json<ResponseUser>> {
     let user = Database::get_user(user_request.email.clone(), user_request.password.clone()).await;
-    dbg!(&user_request);
+    dbg!(&user);
     match user {
-        Some(u) => Ok(u.id.unwrap().key().to_string()),
+        Some(u) => {
+            let id = u.clone().id.unwrap().key().to_string();
+            let root_id = Database::get_user_root_dir(format!("User:{}", id.clone()))
+                .await
+                .unwrap()
+                .key()
+                .to_string();
+            let a = Json(ResponseUser {
+                id: id,
+                root_id: root_id,
+            });
+            dbg!(&a);
+            Ok(a)
+        }
+
         None => Err(actix_web::error::ErrorNotFound("User not found")),
     }
 }

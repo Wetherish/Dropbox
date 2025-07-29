@@ -2,6 +2,8 @@ use dioxus::prelude::*;
 
 use views::{Dashboard, File, Home, Login, Navbar, Signup};
 
+use crate::model::auth::AuthState;
+
 mod components;
 mod model;
 mod views;
@@ -31,6 +33,8 @@ fn main() {
 }
 #[component]
 fn App() -> Element {
+    use_context_provider(|| Signal::new(AuthState::default()));
+
     rsx! {
         document::Link { rel: "icon", href: FAVICON }
         document::Link { rel: "stylesheet", href: MAIN_CSS }

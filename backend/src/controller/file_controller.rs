@@ -93,3 +93,19 @@ pub async fn get_file_upload_url(
         }
     }
 }
+
+#[post("/delete_file_url")]
+pub async fn delete_file(
+    file_id: web::Path<String>,
+    bucket: web::Data<BucketClient>,
+) -> Result<String> {
+    let file_id = file_id.into_inner();
+    let url = bucket.bucket.presign_delete(file_id, 3600 / 2).await;
+    match url {
+        Ok(url) => Ok(url),
+        Err(e) => {
+            eprintln!("Error generating presigned URL: {:?}", e);
+            Err(actix_web::error::ErrorInternalServerError(e))
+        }
+    }
+}
