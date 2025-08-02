@@ -10,6 +10,14 @@ use actix_web::{HttpResponse, Responder, Result, get, post, web};
 use std::str::FromStr;
 use surrealdb::RecordId;
 
+fn add_files_prefix(s: String) -> String {
+    if s.starts_with("Files:") {
+        s
+    } else {
+        format!("Files:{}", s)
+    }
+}
+
 #[get("/")]
 pub async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
@@ -17,14 +25,14 @@ pub async fn hello() -> impl Responder {
 
 #[get("/open_directory/{dir_id}")]
 pub async fn open_dir(path: web::Path<String>) -> Result<Json<Vec<ResponseFile>>> {
-    let dir_id = path.into_inner();
+    let dir_id = add_files_prefix(path.into_inner());
     let res: Vec<File> = Database::get_dir_contents(&dir_id).await;
     Ok(Json(files_to_response_files(res)))
 }
 
 #[get("/get_dir/{dir_id}")]
 pub async fn get(path: web::Path<String>) -> Result<Json<ResponseFile>> {
-    let dir_id = path.into_inner();
+    let dir_id = add_files_prefix(path.into_inner());
     let back = Database::get_file(&dir_id).await;
     Ok(Json(file_to_response_file(back.unwrap())))
 }

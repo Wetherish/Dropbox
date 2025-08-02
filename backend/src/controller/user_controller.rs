@@ -16,14 +16,12 @@ pub async fn create_user(user_request: web::Json<UserRequest>) -> Result<String>
         user_request.email.clone(),
     ))
     .await;
-    dbg!(&user_request);
     Ok(root_id.unwrap().key().to_string())
 }
 
 #[post("/login/")]
 pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<Json<ResponseUser>> {
     let user = Database::get_user(user_request.email.clone(), user_request.password.clone()).await;
-    dbg!(&user);
     match user {
         Some(u) => {
             let id = u.clone().id.unwrap().key().to_string();
@@ -36,7 +34,6 @@ pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<Json<Resp
                 id: id,
                 root_id: root_id,
             });
-            dbg!(&a);
             Ok(a)
         }
 
@@ -47,7 +44,6 @@ pub async fn get_user(user_request: web::Json<LoginRequest>) -> Result<Json<Resp
 #[get("/get_root_dir/{user_id}")]
 pub async fn get_user_root_dir(path: web::Path<String>) -> Result<String> {
     let user_id = path.into_inner();
-    dbg!(&user_id);
     let root_dir = Database::get_user_root_dir(format!("User:{}", user_id)).await;
     match root_dir {
         Some(dir) => Ok(dir.key().to_string()),
