@@ -9,6 +9,12 @@ pub struct User {
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
+pub struct UserResponse {
+    pub id: String,
+    pub root_id: String,
+}
+
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct NewUserRequest {
     pub username: String,
     pub password: String,

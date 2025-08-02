@@ -1,4 +1,10 @@
-use crate::{model::user::LoginRequest, Route};
+use crate::{
+    model::{
+        auth::{use_auth, AuthState},
+        user::{LoginRequest, UserResponse},
+    },
+    Route,
+};
 use dioxus::prelude::*;
 
 const CREATE_NEW_USER: Asset = asset!("/assets/styling/new_user.css");
@@ -7,9 +13,18 @@ const CREATE_NEW_USER: Asset = asset!("/assets/styling/new_user.css");
 pub fn login_component() -> Element {
     let mut email = use_signal(|| String::new());
     let mut password = use_signal(|| String::new());
-    let mut root_id = use_signal(|| String::new());
 
     let nav = use_navigator();
+    let auth = match try_use_context::<Signal<AuthState>>() {
+        Some(auth) => auth,
+        None => {
+            return rsx! {
+                div { class: "error",
+                    "Authentication context not available. Please refresh the page."
+                }
+            };
+        }
+    };
 
     rsx! {
         document::Link { rel: "stylesheet", href: CREATE_NEW_USER }
@@ -46,6 +61,7 @@ pub fn login_component() -> Element {
                             password: password(),
                         };
                         let nav = nav.clone();
+                        let mut auth = auth.clone();
                         spawn(async move {
                             let client = reqwest::Client::new();
                             let resp = client
@@ -55,40 +71,26 @@ pub fn login_component() -> Element {
                                 .await;
                             match resp {
                                 Ok(response) => {
-                                    println!("User created successfully: {:?}", response.status());
-                                    match response.text().await {
-                                        Ok(root_id_value) => {
-                                            let client = reqwest::Client::new();
-                                            match client
-                                                .get(
-                                                    format!(
-                                                        "http://localhost:8080/get_root_dir/{}",
-                                                        root_id_value,
-                                                    ),
-                                                )
-                                                .send()
-                                                .await
-                                            {
-                                                Ok(resp) => {
-                                                    match resp.text().await {
-                                                        Ok(root_dir) => {
-                                                            root_id.set(root_dir.clone());
-                                                            let mut id = String::from("Files:");
-                                                            id.push_str(&root_dir);
-                                                            nav.push(Route::Dashboard { root_id: id });
-                                                        }
-                                                        Err(e) => {
-                                                            println!("Error reading root dir response: {:?}", e);
-                                                        }
-                                                    }
-                                                }
-                                                Err(e) => {
-                                                    println!("Error fetching root dir: {:?}", e);
-                                                }
+                                    if response.status().is_success() {
+                                        match response.json::<UserResponse>().await {
+                                            Ok(user_response) => {
+                                                println!("Login successful!");
+                                                auth.write().login(UserResponse {
+                                                    id: user_response.id,
+                                                    root_id: user_response.root_id.clone()
+                                                });
+                                                nav.push(Route::Dashboard {
+                                                    root_id: user_response.root_id.clone()
+                                                });
+                                            }
+                                            Err(e) => {
+                                                eprintln!("Failed to parse response JSON: {}", e);
                                             }
                                         }
-                                        Err(e) => {
-                                            println!("Error reading response: {:?}", e);
+                                    } else {
+                                        eprintln!("Login failed with status: {}", response.status());
+                                        if let Ok(error_text) = response.text().await {
+                                            eprintln!("Error details: {}", error_text);
                                         }
                                     }
                                 }
