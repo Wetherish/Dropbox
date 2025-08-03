@@ -1,6 +1,11 @@
 body {
     margin: 0;
-    font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+    font-family:
+        "Segoe UI",
+        -apple-system,
+        BlinkMacSystemFont,
+        Roboto,
+        sans-serif;
     background: #0a0a0a;
     color: #e0e0e0;
     overflow: hidden;
@@ -22,8 +27,17 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.15) 0%, transparent 50%);
+    background:
+        radial-gradient(
+            circle at 20% 80%,
+            rgba(120, 119, 198, 0.3) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 119, 198, 0.15) 0%,
+            transparent 50%
+        );
     pointer-events: none;
     z-index: 1;
 }
@@ -49,7 +63,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.02) 0%,
+        rgba(255, 255, 255, 0.01) 100%
+    );
     pointer-events: none;
 }
 
@@ -80,7 +98,11 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(90deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.05) 0%,
+        rgba(255, 255, 255, 0.02) 100%
+    );
     opacity: 0;
     transition: opacity 0.25s ease;
 }
@@ -126,16 +148,152 @@ body {
 
 .toolbar {
     display: flex;
-    gap: 16px;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 32px;
+    gap: 16px;
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 16px;
     align-items: center;
 }
 
-.toolbar button {
+/* Go Back Button Styles */
+.go-back-btn {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.2) 0%,
+        rgba(37, 99, 235, 0.3) 100%
+    );
+    color: #60a5fa;
+    border: 1px solid rgba(59, 130, 246, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.1);
+}
+
+.go-back-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.go-back-btn:hover:not(:disabled) {
+    background: linear-gradient(
+        135deg,
+        rgba(59, 130, 246, 0.3) 0%,
+        rgba(37, 99, 235, 0.4) 100%
+    );
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateY(-2px) translateX(-2px);
+    box-shadow: 0 8px 25px rgba(59, 130, 246, 0.2);
+    color: #ffffff;
+}
+
+.go-back-btn:hover:not(:disabled)::before {
+    left: 100%;
+}
+
+.go-back-btn:active:not(:disabled) {
+    transform: translateY(0) translateX(0);
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.15);
+}
+
+.go-back-btn:disabled {
+    background: rgba(255, 255, 255, 0.05);
+    color: #666;
+    border-color: rgba(255, 255, 255, 0.1);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* Create Folder Button Styles */
+.create-folder-btn {
+    background: linear-gradient(
+        135deg,
+        rgba(34, 197, 94, 0.2) 0%,
+        rgba(22, 163, 74, 0.3) 100%
+    );
+    color: #4ade80;
+    border: 1px solid rgba(34, 197, 94, 0.3);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.1);
+}
+
+.create-folder-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transition: left 0.5s ease;
+}
+
+.create-folder-btn:hover {
+    background: linear-gradient(
+        135deg,
+        rgba(34, 197, 94, 0.3) 0%,
+        rgba(22, 163, 74, 0.4) 100%
+    );
+    border-color: rgba(34, 197, 94, 0.5);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(34, 197, 94, 0.2);
+    color: #ffffff;
+}
+
+.create-folder-btn:hover::before {
+    left: 100%;
+}
+
+.create-folder-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 15px rgba(34, 197, 94, 0.15);
+}
+
+/* Other toolbar buttons (File_input component) */
+.toolbar button:not(.go-back-btn):not(.create-folder-btn) {
     background: rgba(255, 255, 255, 0.08);
     color: #f0f0f0;
     border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 12px 20px;
     font-size: 0.95rem;
     font-weight: 500;
@@ -146,29 +304,34 @@ body {
     overflow: hidden;
 }
 
-.toolbar button::before {
+.toolbar button:not(.go-back-btn):not(.create-folder-btn)::before {
     content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
     transition: left 0.5s ease;
 }
 
-.toolbar button:hover {
+.toolbar button:not(.go-back-btn):not(.create-folder-btn):hover {
     background: rgba(255, 255, 255, 0.15);
     border-color: rgba(255, 255, 255, 0.2);
     transform: translateY(-2px);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
 }
 
-.toolbar button:hover::before {
+.toolbar button:not(.go-back-btn):not(.create-folder-btn):hover::before {
     left: 100%;
 }
 
-.toolbar button:active {
+.toolbar button:not(.go-back-btn):not(.create-folder-btn):active {
     transform: translateY(0);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }

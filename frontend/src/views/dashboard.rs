@@ -9,6 +9,7 @@ pub fn Dashboard(root_id: String) -> Element {
     dbg!(&root_id);
     let mut show_new_dir_modal = use_signal(|| false);
     let mut dashboard_link = use_signal(|| root_id);
+
     let mut open_directory: Resource<Result<Vec<File>, reqwest::Error>> = use_resource(move || {
         let current_id = dashboard_link.read().to_string();
         async move {
@@ -38,6 +39,14 @@ pub fn Dashboard(root_id: String) -> Element {
         open_directory.restart();
     };
 
+    let handle_go_back = move |_| {
+        if let Some(Ok(current_dir)) = fetch_directory.read().as_ref() {
+            if let Some(parent_id) = &current_dir.parent {
+                dashboard_link.set(parent_id.clone());
+            }
+        }
+    };
+
     rsx! {
         div { id: "dashboard",
             document::Link { rel: "stylesheet", href: DASHBOARD }
@@ -50,9 +59,20 @@ pub fn Dashboard(root_id: String) -> Element {
                 match &*fetch_directory.read() {
                     Some(Ok(response)) => rsx! {
                         div { class: "toolbar",
-                            button { "Create" }
-                            File_input {}
-                            button { onclick: move |_| show_new_dir_modal.set(true), "Create folder" }
+                            button {
+                                class: "go-back-btn",
+                                onclick: handle_go_back,
+                                disabled: response.parent.is_none(),
+                                "← Go Back"
+                            }
+                            div { class: "toolbar-right",
+                                File_input {}
+                                button {
+                                    class: "create-folder-btn",
+                                    onclick: move |_| show_new_dir_modal.set(true),
+                                    "+ Create folder"
+                                }
+                            }
                         }
                         {(*show_new_dir_modal.read()).then(|| rsx! {
                             div {
@@ -80,10 +100,7 @@ pub fn Dashboard(root_id: String) -> Element {
                     Some(Ok(response)) => rsx! {
                         div { class: "folder-grid",
                             div {
-                                "elems: "
-                                {
-                                    response.len();
-                                }
+                                "elems: {response.len()}"
                             }
                             for file in response {
                                 File_item {
